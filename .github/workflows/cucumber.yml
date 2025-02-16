@@ -25,4 +25,4 @@ jobs:
       run: ./gradlew dependencies
 
     - name: Run Cucumber tests
-      run: ./gradlew cucumber
+      run: ./gradlew cucumberCli
