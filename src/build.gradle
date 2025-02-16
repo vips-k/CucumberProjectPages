@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.sample.automation'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+// Define the version of Allure you want to use via the allureVersion property
+def allureVersion = "2.24.0"
+
+dependencies {
+    testImplementation 'io.cucumber:cucumber-java:7.20.1'
+
+    // Import allure-bom to ensure correct versions of all the dependencies are used
+    testImplementation platform("io.qameta.allure:allure-bom:~$allureVersion")
+    // Add necessary Allure dependencies to dependencies section
+    testImplementation "io.qameta.allure:allure-cucumber7-jvm"
+    testImplementation "io.qameta.allure:allure-junit-platform"
+
+    implementation "io.qameta.allure:io.qameta.allure.gradle.plugin:2.24.0"
+}
+plugins {
+    id "java"
+    id "maven-publish"
+    id "io.qameta.allure" version "2.12.0"
+}
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'io.qameta.allure'
+/*
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'io.cucumber:cucumber-java:7.20.1'
+}
+*/
+
+
+

@@ -1,0 +1,87 @@
+
+plugins {
+    id 'java'
+    id "maven-publish"
+    id "io.qameta.allure" version "2.12.0"
+}
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'io.qameta.allure'
+
+
+group = 'org.sample.automation'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+
+// Define the version of Allure you want to use via the allureVersion property
+def allureVersion = "2.24.0"
+
+dependencies {
+    testImplementation 'io.cucumber:cucumber-java:7.20.1'
+    implementation 'org.json:json:20230618'
+    testImplementation 'junit:junit:4.12'
+    implementation 'junit:junit:4.12'
+
+    // Import allure-bom to ensure correct versions of all the dependencies are used
+    testImplementation platform("io.qameta.allure:allure-bom:$allureVersion")
+    // Add necessary Allure dependencies to dependencies section
+    testImplementation "io.qameta.allure:allure-cucumber7-jvm"
+    testImplementation "io.qameta.allure:allure-junit-platform"
+    testImplementation "io.qameta.allure:allure-java-commons"
+
+
+}
+
+
+/*
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'io.cucumber:cucumber-java:7.20.1'
+}
+*/
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+tasks.register("cucumberCli") {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'pretty',
+                    '--plugin', 'html:target/cucumber-report.html',
+                    '--plugin', 'io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm',
+                    '--glue', 'org.sample.automation.stepDefinition',
+                    'src/test/resources']
+        }
+    }
+    finalizedBy allureReport
+}
+
+tasks.register('copyFileToBuild', Copy) {
+    from 'target/plugins/behaviors-plugin-2.30.2.jar'
+    into 'build/allure/commandline/plugins/behaviors-plugin'
+}
+
+allure {
+    allureReport {
+        mustRunAfter copyFileToBuild
+        clean.set(true)
+        singleFile.set(true)
+    }
+}
+
+tasks.named('downloadAllure') {
+    finalizedBy copyFileToBuild
+}
+
