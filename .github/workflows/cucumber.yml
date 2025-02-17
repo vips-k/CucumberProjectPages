@@ -21,10 +21,10 @@ jobs:
       run: ./gradlew dependencies
 
     - name: Run Cucumber tests
-      run: ./gradlew cucumber
+      run: ./gradlew cucumberCli
 
     - name: Archive Cucumber Reports
       uses: actions/upload-artifact@v4
       with:
         name: cucumber-reports
-        path: target/
+        path: build/reports/allure-report/
