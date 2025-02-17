@@ -6,7 +6,7 @@ on:
 jobs:
   run-cucumber:
     runs-on: ubuntu-latest
-    
+
     permissions:
       id-token: write
       contents: read
@@ -44,7 +44,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: run-cucumber
-    
+
     permissions:
       id-token: write
       contents: read
