@@ -33,13 +33,13 @@ jobs:
       run: ./gradlew allureReport
 
     - name: List report directory contents (debugging)
-      run: ls -R build/reports/allure-report/
+      run: ls -R build/reports/allure-report/allureReport/
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
-        path: build/reports/allure-report/
+        path: build/reports/allure-report/allureReport/
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,5 +53,5 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         artifact_name: allure-report
