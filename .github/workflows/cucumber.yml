@@ -6,6 +6,10 @@ on:
 jobs:
   run-cucumber:
     runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
     - name: Checkout repository
@@ -25,23 +29,29 @@ jobs:
     - name: Run Cucumber tests
       run: ./gradlew cucumberCli
 
-    - name: List report directory contents (debugging)
-      run: ls -R build/reports/allure-report/allureReport/
+    - name: Build the report
+      run: ./gradlew allureReport
 
+    - name: List report directory contents (debugging)
+      run: ls -R build/reports/allure-report/
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
-        path: build/reports/allure-report/allureReport/
+        name: allure-report
+        path: build/reports/allure-report/
 
   deploy:
     runs-on: ubuntu-latest
     needs: run-cucumber
+    
     permissions:
       id-token: write
       contents: read
+
     steps:
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v1
       with:
-        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        artifact_name: allure-report
