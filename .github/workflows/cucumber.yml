@@ -23,8 +23,8 @@ jobs:
     - name: Run Cucumber tests
       run: ./gradlew cucumberCli
 
-    - name: Archive Cucumber Reports
-      uses: actions/upload-artifact@v4
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        name: cucumber-reports
-        path: build/reports/allure-report/
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: build/reports/allure-report/
