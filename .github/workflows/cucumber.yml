@@ -22,3 +22,9 @@ jobs:
 
     - name: Run Cucumber tests
       run: ./gradlew cucumber
+
+    - name: Archive Cucumber Reports
+      uses: actions/upload-artifact@v2
+      with:
+        name: cucumber-reports
+        path: target/
