@@ -25,6 +25,10 @@ jobs:
     - name: Run Cucumber tests
       run: ./gradlew cucumberCli
 
+    - name: List report directory contents (debugging)
+      run: ls -R build/reports/allure-report/
+
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
