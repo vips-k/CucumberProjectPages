@@ -29,14 +29,11 @@ jobs:
     - name: Run Cucumber tests
       run: ./gradlew cucumberCli
 
-    - name: Build the report
-      run: ./gradlew allureReport
-
     - name: List report directory contents (debugging)
       run: ls -R build/reports/allure-report/allureReport/
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-pages-artifact@v4
       with:
         name: allure-report
         path: build/reports/allure-report/allureReport/index.html
@@ -54,4 +51,3 @@ jobs:
       uses: actions/deploy-pages@v4
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        artifact_name: allure-report
