@@ -68,20 +68,47 @@ tasks.register("cucumberCli") {
     finalizedBy allureReport
 }
 
+tasks.register('deleteOldFile') {
+    doLast {
+        def file = file('build/allure/commandline/plugins/behaviors-plugin/behaviors-plugin-2.30.0.jar')
+        if (file.exists()) {
+            file.delete()
+            println "Deleted: ${file.name}"
+        } else {
+            println "File not found: ${file.name}"
+        }
+    }
+}
+
+tasks.named('downloadAllure') {
+    finalizedBy deleteOldFile
+}
+
+tasks.named('deleteOldFile') {
+    finalizedBy copyFileToBuild
+}
+
 tasks.register('copyFileToBuild', Copy) {
     from 'target/plugins/behaviors-plugin-2.30.2.jar'
     into 'build/allure/commandline/plugins/behaviors-plugin'
 }
 
+tasks.register('listFiles') {
+    doLast {
+        file('build/allure/commandline/plugins/behaviors-plugin').eachFile { file ->
+            println file.name
+        }
+    }
+}
+
 allure {
     allureReport {
-        mustRunAfter copyFileToBuild
+        mustRunAfter copyFileToBuild, listFiles
         clean.set(true)
         singleFile.set(true)
     }
 }
 
-tasks.named('downloadAllure') {
-    finalizedBy copyFileToBuild
+tasks.named('copyFileToBuild') {
+    finalizedBy listFiles
 }
-
