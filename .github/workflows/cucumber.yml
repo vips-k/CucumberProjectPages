@@ -30,7 +30,7 @@ jobs:
       run: ./gradlew cucumberCli
 
     - name: List report directory contents (debugging)
-      run: ls -R build/reports/allure-report/allureReport/
+      run: ls -R build/allure/commandline/plugins/behaviors-plugin/
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
