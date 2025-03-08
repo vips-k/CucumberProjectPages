@@ -51,3 +51,7 @@ jobs:
       uses: actions/deploy-pages@v4
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+    - name: Generate Report Link
+      run: |
+          echo "## Test Report : [Download Here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
