@@ -32,11 +32,14 @@ jobs:
     - name: List report directory contents (debugging)
       run: ls -R build/allure/commandline/plugins/behaviors-plugin/
 
+    - name: Move report to unique directory
+      run: mv build/reports/allure-report/allureReport/ build/reports/allure-report/${{ github.run_id }}
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
         name: github-pages
-        path: build/reports/allure-report/allureReport/
+        path: build/reports/allure-report/${{ github.run_id }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,3 +54,8 @@ jobs:
       uses: actions/deploy-pages@v4
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        artifact_name: github-pages
+
+    - name: Generate Report Link
+      run: |
+          echo "## Test Report : [Download Here - ${{ github.repository }} - ${{ github.run_id }}](https://vips-k.github.io/CucumberProjectDemo/${{ github.run_id }}/)" >> $GITHUB_STEP_SUMMARY
