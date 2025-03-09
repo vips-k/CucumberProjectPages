@@ -32,11 +32,23 @@ jobs:
     - name: List report directory contents (debugging)
       run: ls -R build/allure/commandline/plugins/behaviors-plugin/
 
+    - name: Verify report directory existence (debugging)
+      run: |
+        if [ -d build/reports/allure-report/allureReport ]; then
+          echo "Report directory exists."
+        else
+          echo "Report directory does not exist."
+          exit 1
+        fi
+
+    - name: Move report to unique directory
+      run: mv build/reports/allure-report/allureReport/ build/reports/allure-report/${{ github.run_id }}
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
         name: github-pages
-        path: build/reports/allure-report/allureReport/
+        path: build/reports/allure-report/${{ github.run_id }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,7 +59,37 @@ jobs:
       contents: read
 
     steps:
-    - name: Deploy to GitHub Pages
-      uses: actions/deploy-pages@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
       with:
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        ref: gh-pages
+
+    - name: Copy report to gh-pages
+      run: |
+        mkdir -p reports/${{ github.run_id }}
+        cp -r ${{ github.workspace }}/build/reports/allure-report/${{ github.run_id }}/* reports/${{ github.run_id }}/
+
+    - name: Update index.html
+      run: |
+        REPORT_LINK="reports/${{ github.run_id }}/index.html"
+        echo "<li><a href='${REPORT_LINK}'>Report for Run ID ${{ github.run_id }}</a></li>" >> new_entry.html
+        if [ -f index.html ]; then
+          sed -i '/<\/ul>/e cat new_entry.html' index.html
+        else
+          echo "<html><body><h1>Test Reports</h1><ul>" > index.html
+          cat new_entry.html >> index.html
+          echo "</ul></body></html>" >> index.html
+        fi
+        rm new_entry.html
+
+    - name: Commit changes
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add reports index.html
+        git commit -m "Add report for run ID ${{ github.run_id }}"
+        git push origin gh-pages
+
+    - name: Generate Report Link
+      run: |
+        echo "## Test Report : [Download Here - ${{ github.repository }} - ${{ github.run_id }}](https://vips-k.github.io/CucumberProjectDemo/reports/${{ github.run_id }}/index.html)" >> $GITHUB_STEP_SUMMARY
