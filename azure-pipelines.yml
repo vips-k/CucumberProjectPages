@@ -1,22 +1,54 @@
-# Gradle
-# Build your Java project and run tests with Gradle using a Gradle wrapper script.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
-- master
+- none
 
-pool:
-  vmImage: ubuntu-latest
+pr:
+- none
 
-steps:
-- task: Gradle@3
-  inputs:
-    gradleWrapperFile: 'gradlew'  # Path to your Gradle wrapper
-    tasks: 'build'  # Replace with the tasks you want to run
-    options: '-Xmx3072m' 
-    publishJUnitResults: true
-    testResultsFiles: '**/TEST-*.xml'  # Updated pattern for test result files
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'  # Replace with your JDK version
-    jdkArchitectureOption: 'x64'
+jobs:
+- job: runCucumber
+  displayName: 'Run Cucumber CLI'
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - checkout: self
+    displayName: 'Checkout repository'
+    persistCredentials: true
+
+  - task: JavaToolInstaller@0
+    displayName: 'Set up JDK 11'
+    inputs:
+      versionSpec: '11'
+      jdkArchitectureOption: 'x64'
+
+  - script: ./gradlew dependencies
+    displayName: 'Install dependencies'
+
+  - script: ./gradlew cucumberCli
+    displayName: 'Run Cucumber tests'
+
+  - script: ls -R build/allure/commandline/plugins/behaviors-plugin/
+    displayName: 'List report directory contents (debugging)'
+
+  - task: CopyFiles@2
+    displayName: 'Upload artifact'
+    inputs:
+      SourceFolder: 'build/reports/allure-report/allureReport/'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/github-pages'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/github-pages'
+      ArtifactName: 'github-pages'
+
+- job: deploy
+  displayName: 'Deploy to GitHub Pages'
+  dependsOn: runCucumber
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - script: echo 'Deploy step should be implemented here'
+    displayName: 'Deploy to GitHub Pages'
