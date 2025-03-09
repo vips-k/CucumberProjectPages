@@ -32,6 +32,15 @@ jobs:
     - name: List report directory contents (debugging)
       run: ls -R build/allure/commandline/plugins/behaviors-plugin/
 
+    - name: Verify report directory existence (debugging)
+      run: |
+        if [ -d build/reports/allure-report/allureReport ]; then
+          echo "Report directory exists."
+        else
+          echo "Report directory does not exist."
+          exit 1
+        fi
+
     - name: Move report to unique directory
       run: mv build/reports/allure-report/allureReport/ build/reports/allure-report/${{ github.run_id }}
 
@@ -47,7 +56,7 @@ jobs:
 
     permissions:
       id-token: write
-      contents: write
+      contents: read
 
     steps:
     - name: Checkout repository
