@@ -37,6 +37,7 @@ jobs:
       with:
         name: github-pages
         path: build/reports/allure-report/allureReport/
+        destination-path: ${{ github.run_id }}/allure-report/
 
   deploy:
     runs-on: ubuntu-latest
@@ -54,4 +55,4 @@ jobs:
 
     - name: Generate Report Link
       run: |
-          echo "## Test Report : [Download Here - ${{ github.repository }} - ${{ github.run_id }}](https://vips-k.github.io/CucumberProjectDemo/)" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Report : [Download Here - ${{ github.repository }} - ${{ github.run_id }}](https://vips-k.github.io/CucumberProjectDemo/${{ github.run_id }}/allure-report/)" >> $GITHUB_STEP_SUMMARY
