@@ -54,4 +54,4 @@ jobs:
 
     - name: Generate Report Link
       run: |
-          echo "## Test Report : [Download Here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Report : [Download Here - ${{ github.repository }} - ${{ github.run_id }}](https://vips-k.github.io/CucumberProjectDemo/)" >> $GITHUB_STEP_SUMMARY
