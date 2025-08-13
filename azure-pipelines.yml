@@ -1,9 +1,5 @@
 trigger: none
-
 pr: none
-
-# This pipeline is intended to be run manually with parameters, similar to workflow_dispatch in GitHub Actions.
-# To run: Click "Run pipeline" in Azure DevOps UI.
 
 parameters:
   - name: testCases
@@ -19,11 +15,15 @@ steps:
 
   - script: ./gradlew cucumber
     displayName: 'Run Cucumber Tests'
-    # If testCases needs to be passed as an environment variable or gradle property, adjust accordingly:
-    # env:
-    #   TEST_CASES: ${{ parameters.testCases }}
-    # Or use: ./gradlew cucumber -PtestCases=${{ parameters.testCases }}
+    # Optionally pass testCases as property/environment variable
 
+  # Publish Allure Report to Azure DevOps UI
+  - task: AllureReport@1
+    displayName: 'Publish Allure Report'
+    inputs:
+      reportDir: 'build/reports/allure-report'
+
+  # (Optional) Also publish as artifact for download
   - task: PublishBuildArtifacts@1
     displayName: 'Upload Allure report'
     inputs:
