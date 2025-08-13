@@ -17,11 +17,11 @@ steps:
     displayName: 'Run Cucumber Tests'
     # Optionally pass testCases as property/environment variable
 
-  # Publish Allure Report to Azure DevOps UI
-  - task: AllureReport@1
-    displayName: 'Publish Allure Report'
+  - task: PublishAllureReport@1
+    displayName: "Publish Allure Report"
     inputs:
-      reportDir: 'build/reports/allure-report'
+      testResultsDir: "build/allure-results"    # Path to your Allure results (not the generated report)
+      reportName: "Main Test Report"            # Friendly name for the report tab
 
   # (Optional) Also publish as artifact for download
   - task: PublishBuildArtifacts@1
